@@ -1,0 +1,41 @@
+CREATE VIEW View_PullNTA_DataTest7
+AS
+--DECLARE @DataPullDateTime datetime
+--SET @DataPullDateTime = GETDATE()
+ 
+--INSERT INTO NTA_Data (TRAIN_TYPE, ROUTE, TRAIN, a_loc, z_loc, z_time, a_time, secdelay, display_line,Today, datapull_date_time)
+SELECT DISTINCT TOP(10000) 
+       [sta].[Path],
+       [sta].[ROUTE],
+       [org].[Train] AS Train,
+       [org].[Station] AS a_loc,
+       [dst].[Station] AS z_loc,
+       (CASE
+              WHEN [dst].[Station] IN ('30TH', 'SUBR', 'MKTE', 'EWNS')
+              THEN DATEADD(second, + 60, [dst].[SchedDepart])
+              ELSE [dst].[SchedDepart] END) AS z_time,
+        [org].[ActualDepart] AS a_time,
+        (CASE
+              WHEN [sta].[Delay] IS NULL THEN 0 
+              ELSE sta.Delay END) AS secdelay,
+        [line_lookup].[DISPLAY LINE] AS display_line,
+        [ATDS].CurrentTrainDate() as Today
+      --@DataPullDateTime
+FROM [ATDS].[TrainOnStation] AS [org] WITH (NOLOCK)
+INNER JOIN [ATDS].[TrainOnStation] AS [dst] WITH (NOLOCK)
+              ON [org].[Train] = [dst].[Train]
+			            AND [org].[ID] = [dst].[ID]
+                  AND [org].[SchedDepart]< [dst].[SchedDepart]
+INNER JOIN [ATDS].TRAIN AS sta WITH (NOLOCK)
+              ON [org].[ID] = [sta].[ID]
+INNER JOIN [PWIN-SQLDB-08].[API_db].[dbo].[NTA_LineLookup] AS line_lookup WITH (NOLOCK)
+              ON [sta].[Path] = [line_lookup].[PATH]
+              --AND [org].[Station] = [line_lookup].[STATION]-- Need to match the line look up station to four chars
+WHERE org.Date = (SELECT [ATDS].[ATDS].CurrentTrainDate())
+AND ([sta].[AnnulTime] IS NULL)
+AND CONVERT(VARCHAR(10),dst.SchedDepart , 120) like (select CONVERT(VARCHAR(10),GETDATE(),120))
+and org.Train LIKE '%531';
+
+
+
+--Select * from View_PullNTA_DataTest7 where a_loc = 'STRF' ;
