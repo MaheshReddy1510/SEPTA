@@ -17,7 +17,6 @@ CREATE TABLE [dbo].[NTA_Data](
 	[a_time] [datetime] NULL,
 	[secdelay] [int] NULL,
 	[display_line] [nvarchar](32) NULL,
-	[Today] [nvarchar](65) NULL,
 	[datapull_date_time] [datetime] NULL
 ) ON [PRIMARY]
 GO
