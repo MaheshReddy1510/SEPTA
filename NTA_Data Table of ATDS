@@ -1,0 +1,25 @@
+USE [ATDS]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[NTA_Data](
+	[TRAIN_TYPE] [nvarchar](8) NULL,
+	[ROUTE] [nvarchar](8) NULL,
+	[TRAIN] [nvarchar](16) NULL,
+	[a_loc] [nvarchar](32) NULL,
+	[z_loc] [nvarchar](32) NULL,
+	[z_time] [datetime] NULL,
+	[a_time] [datetime] NULL,
+	[secdelay] [int] NULL,
+	[display_line] [nvarchar](32) NULL,
+	[Today] [nvarchar](65) NULL,
+	[datapull_date_time] [datetime] NULL
+) ON [PRIMARY]
+GO
+
+--Select * from NTA_Data;
